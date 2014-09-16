@@ -1,28 +1,5 @@
 module Sprockets::Rails::Helper
 
-  # == BEGIN Hacks for checking if dependencies are listed correctly
-  class DependencyError < StandardError
-    def initialize(path, dep)
-      msg =  "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
-      msg << "Please add: `//= depend_on_asset \"#{dep}\"` to '#{path}'"
-      super msg
-    end
-  end
-
-
-  def check_dependencies!(dep)
-    return unless Sprockets::Rails::Helper.raise_asset_errors
-    return unless @_dependency_assets
-    return if     @_dependency_assets.detect { |asset| asset.include?(dep) }
-    raise DependencyError.new(self.pathname, dep)
-  end
-
-  alias :orig_compute_asset_path :compute_asset_path
-  def compute_asset_path(path, options = {})
-    check_dependencies!(path)
-    orig_compute_asset_path(path, options)
-  end
-
   # == BEGIN Hacks for checking if asset is in precompile list
 
   # support for Ruby 1.9.3 Rails 3.x
